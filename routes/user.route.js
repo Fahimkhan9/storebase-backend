@@ -1,7 +1,7 @@
 import express from 'express';
 import passport from 'passport';
 import '../config/passport.js'
-import { handleOAuthCallback, getMe } from '../controllers/user.controller.js';
+import { handleOAuthCallback, getMe, logout } from '../controllers/user.controller.js';
 import { isAuthenticated } from '../middleware/auth.middleware.js';
 
 
@@ -15,5 +15,5 @@ router.get('/auth/google/callback',
 );
 
 router.get('/me', isAuthenticated, getMe);
-
+router.post('/logout',isAuthenticated,logout)
 export default router;

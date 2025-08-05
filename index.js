@@ -66,7 +66,13 @@ app.use(
 import userRoute from "./routes/user.route.js";
 
 import healthRoute from "./routes/health.routes.js";
+import folderRoute from './routes/folder.route.js'
+import mediaRoute from './routes/media.route.js';
 app.use("/api/users", userRoute);
+app.use("/api/folders", folderRoute);
+app.use("/api/media", mediaRoute);
+
+
 app.use("/health", healthRoute);
 
 // 404 Handler
