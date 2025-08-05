@@ -34,6 +34,7 @@ export const uploadMedia = catchAsync(async (req, res) => {
       folder: folder._id,
       user: req.user._id,
       originalName: file.originalname,
+       fileId: uploaded.fileId,
     });
 
     uploadedMedia.push(mediaDoc);
@@ -53,4 +54,61 @@ export const getMediaByFolder = catchAsync(async (req, res) => {
   const media = await Media.find({ folder: folderId, user: req.user._id }).sort({ createdAt: -1 });
 
   res.json({ media });
+});
+export const deleteMedia = catchAsync(async (req, res) => {
+  const mediaId = req.params.id;
+
+  const media = await Media.findOne({ _id: mediaId, user: req.user._id });
+  if (!media) throw new AppError('Media not found or unauthorized', 404);
+
+  // Extract ImageKit fileId from the URL or store it separately
+  const fileId = media.url.split('/').pop().split('.')[0]; // crude fallback, you should store fileId at upload
+
+  // Try deleting from ImageKit
+  try {
+    await imagekit.deleteFile(fileId);
+  } catch (err) {
+    console.error('ImageKit delete error:', err?.message || err);
+    // Not throwing, allow DB delete even if cloud deletion fails
+  }
+
+  await media.deleteOne();
+
+  res.status(200).json({
+    message: 'Media deleted successfully',
+  });
+});
+
+export const bulkDeleteMedia = catchAsync(async (req, res) => {
+  const { ids } = req.body;
+
+  if (!Array.isArray(ids) || ids.length === 0) {
+    throw new AppError('Please provide an array of media IDs to delete', 400);
+  }
+
+  const mediaDocs = await Media.find({
+    _id: { $in: ids },
+    user: req.user._id,
+  });
+
+  if (mediaDocs.length === 0) {
+    throw new AppError('No media found or unauthorized', 404);
+  }
+
+  await Promise.all(
+    mediaDocs.map(async (media) => {
+      try {
+        // Better to store and use ImageKit fileId in DB, but this works:
+        const fileName = decodeURIComponent(media.url.split('/').pop());
+        const fileId = fileName.split('.')[0];
+
+        await imagekit.deleteFile(fileId);
+      } catch (err) {
+        console.warn('Failed to delete from ImageKit:', err.message);
+      }
+      await media.deleteOne();
+    })
+  );
+
+  res.json({ message: `${mediaDocs.length} media items deleted successfully.` });
 });

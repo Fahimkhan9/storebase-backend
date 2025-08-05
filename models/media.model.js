@@ -10,6 +10,7 @@ const mediaSchema = new mongoose.Schema({
     enum: ['image', 'pdf'],
     required: true,
   },
+  fileId: { type: String, required: true },
   originalName: {
     type: String,
   },
