@@ -81,7 +81,7 @@ export const deleteMedia = catchAsync(async (req, res) => {
 
 export const bulkDeleteMedia = catchAsync(async (req, res) => {
   const { ids } = req.body;
-  console.log(`body ${req.body}`)
+ 
   if (!Array.isArray(ids) || ids.length === 0) {
     throw new AppError('Please provide an array of media IDs to delete', 400);
   }
