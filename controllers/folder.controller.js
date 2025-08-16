@@ -6,7 +6,8 @@ import { catchAsync } from '../middleware/error.middleware.js';
 export const createFolder = catchAsync(async (req, res) => {
   const { name } = req.body;
   if (!name) throw new AppError('Folder name is required', 400);
-
+console.log({ name,
+    user: req.user._id,})
   const folder = await Folder.create({
     name,
     user: req.user._id,

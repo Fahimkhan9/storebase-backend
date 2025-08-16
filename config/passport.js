@@ -1,8 +1,10 @@
 import passport from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
-import {User} from '../models/user.model.js';
-import dotenv from 'dotenv'
+import { User } from '../models/user.model.js';
+import dotenv from 'dotenv';
+
 dotenv.config();
+
 passport.use(
   new GoogleStrategy(
     {
@@ -17,9 +19,9 @@ passport.use(
         if (!user) {
           user = await User.create({
             googleId: profile.id,
-            email: profile.emails[0].value,
+            email: profile.emails?.[0]?.value || '',
             name: profile.displayName,
-            image: profile.photos[0].value,
+            image: profile.photos?.[0]?.value || '',
           });
         }
 

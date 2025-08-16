@@ -26,7 +26,7 @@ const userSchema = new mongoose.Schema(
     },
     storageLimit: {
       type: Number,
-      default: 5 * 1024 * 1024 * 1024, // 5GB free plan by default
+      default: 5 * 1024 * 1024 * 1024, // 5GB free plan
     },
 
     // Plan / Billing
@@ -40,16 +40,17 @@ const userSchema = new mongoose.Schema(
     },
     subscriptionStatus: {
       type: String,
-      enum: ['active', 'canceled', 'past_due', 'unpaid', null],
+      enum: ['active', 'canceled', 'past_due', 'unpaid'],
       default: null,
     },
     subscriptionEndsAt: {
       type: Date,
     },
-
-    // Timestamps
   },
   { timestamps: true }
 );
 
-export const User=  mongoose.model('User', userSchema);
+// Useful index
+userSchema.index({ googleId: 1, email: 1 });
+
+export const User = mongoose.model('User', userSchema);

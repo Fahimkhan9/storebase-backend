@@ -1,33 +1,41 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
-const mediaSchema = new mongoose.Schema({
-  url: {
-    type: String,
-    required: true,
+const mediaSchema = new mongoose.Schema(
+  {
+    url: {
+      type: String,
+      required: true,
+    },
+    fileType: {
+      type: String,
+      enum: ["image", "pdf"],
+      required: true,
+    },
+    folder: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Folder",
+      required: true,
+    },
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    originalName: {
+      type: String,
+      required: true,
+    },
+    fileId: {
+      type: String,
+      required: true, // ImageKit file ID
+    },
+    size: {
+      type: Number, // in bytes
+      required: true,
+    },
   },
-  fileType: {
-    type: String,
-    enum: ['image', 'pdf'],
-    required: true,
-  },
-  fileId: { type: String, required: true },
-  originalName: {
-    type: String,
-  },
-  user: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true,
-  },
-  folder: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Folder',
-    required: true,
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
-});
+  { timestamps: true }
+);
 
-export default mongoose.model('Media', mediaSchema);
+const Media = mongoose.model("Media", mediaSchema);
+export default Media;
